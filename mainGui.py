@@ -1511,7 +1511,6 @@ class Game:
         elif game_id == 4:
             call(['python', 'TicTacToe.py',self.userName])
         elif game_id == 5:
-                self.root.destroy()
                 import Ludo_game
                 new_root = tk.Tk()
 
