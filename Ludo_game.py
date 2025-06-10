@@ -11,27 +11,27 @@ import logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class Ludo:
-    def __init__(self, root, username=""):
+    def __init__(self , root , username=""):
         self.window = root
-        self.window.geometry("1535x780+-7+0")
-        self.window.title("Play Ludo with Sam")
-        self.window.iconbitmap("Images/ludo_icon.ico")
-        self.window.resizable(False, False)
-        self.window.configure(bg="#1e1e2e")
+        self.window.geometry ( "1535x780+-7+0" )
+        self.window.title ( "Play Ludo with Sam" )
+        self.window.iconbitmap ( "Images/ludo_icon.ico" )
+        self.window.resizable ( False , False )
+        self.window.configure ( bg = "#1e1e2e" )
 
         # Initialize images for dice blocks
-        self.block_six_side = ImageTk.PhotoImage(
-            Image.open("Images/6_block.png").resize((33, 33), Image.LANCZOS))
-        self.block_five_side = ImageTk.PhotoImage(
-            Image.open("Images/5_block.png").resize((33, 33), Image.LANCZOS))
-        self.block_four_side = ImageTk.PhotoImage(
-            Image.open("Images/4_block.png").resize((33, 33), Image.LANCZOS))
-        self.block_three_side = ImageTk.PhotoImage(
-            Image.open("Images/3_block.png").resize((33, 33), Image.LANCZOS))
-        self.block_two_side = ImageTk.PhotoImage(
-            Image.open("Images/2_block.png").resize((33, 33), Image.LANCZOS))
-        self.block_one_side = ImageTk.PhotoImage(
-            Image.open("Images/1_block.png").resize((33, 33), Image.LANCZOS))
+        self.block_six_side = ImageTk.PhotoImage (
+            Image.open ( "Images/6_block.png" ).resize ( (33 , 33) , Image.LANCZOS ) , master = self.window )
+        self.block_five_side = ImageTk.PhotoImage (
+            Image.open ( "Images/5_block.png" ).resize ( (33 , 33) , Image.LANCZOS ) , master = self.window )
+        self.block_four_side = ImageTk.PhotoImage (
+            Image.open ( "Images/4_block.png" ).resize ( (33 , 33) , Image.LANCZOS ) , master = self.window )
+        self.block_three_side = ImageTk.PhotoImage (
+            Image.open ( "Images/3_block.png" ).resize ( (33 , 33) , Image.LANCZOS ) , master = self.window )
+        self.block_two_side = ImageTk.PhotoImage (
+            Image.open ( "Images/2_block.png" ).resize ( (33 , 33) , Image.LANCZOS ) , master = self.window )
+        self.block_one_side = ImageTk.PhotoImage (
+            Image.open ( "Images/1_block.png" ).resize ( (33 , 33) , Image.LANCZOS ) , master = self.window )
 
         # Initialize timing variables
         self.start_time = time.time()
@@ -108,8 +108,8 @@ class Ludo:
     def on_closing(self):
         """Handle window close event to save game time."""
         if not self.time_saved:
-            self.save_game_time()
-        self.window.destroy()
+            self.save_game_time ( )
+        self.window.after ( 100 , self.window.destroy )
 
     def save_game_time(self):
         """Save the time spent playing to the database."""
@@ -530,6 +530,9 @@ class Ludo:
             return False
 
     def make_prediction(self , color_indicator):
+        if not self.window.winfo_exists ( ):
+            logging.debug ( "Window destroyed, skipping prediction" )
+            return
         try:
             if color_indicator == "red":
                 block_value_predict = self.block_value_predict[0]
@@ -548,20 +551,21 @@ class Ludo:
 
             # Illusion of coin floating
             temp_counter = 15
-            while temp_counter > 0:
+            while temp_counter > 0 and self.window.winfo_exists ( ):
                 move_temp_counter = randint ( 1 , 6 )
                 block_value_predict[0]['image'] = self.block_number_side[move_temp_counter - 1]
                 self.window.update ( )
                 time.sleep ( 0.1 )
                 temp_counter -= 1
 
-            print ( "Prediction result: " , permanent_block_number )
-
-            # Permanent predicted value containing image set
-            block_value_predict[0]['image'] = self.block_number_side[permanent_block_number - 1]
-            self.instructional_btn_customization_based_on_current_situation ( color_indicator , permanent_block_number ,
-                                                                              block_value_predict )
-        except:
+            if self.window.winfo_exists ( ):
+                print ( "Prediction result: " , permanent_block_number )
+                block_value_predict[0]['image'] = self.block_number_side[permanent_block_number - 1]
+                self.instructional_btn_customization_based_on_current_situation (
+                    color_indicator , permanent_block_number , block_value_predict
+                )
+        except Exception as e:
+            logging.error ( "Error in make_prediction: %s" , e )
             print ( "Force stop error" )
 
     def instructional_btn_customization_based_on_current_situation(self , color_indicator , permanent_block_number ,
@@ -1007,17 +1011,25 @@ class Ludo:
         if permission_granted_to_proceed:  # if that is False, Game is over and not proceed more
             self.make_command ( )
 
-    def motion_of_coin(self, counter_coin, specific_coin, number_label, number_label_x, number_label_y, color_coin, path_counter):
-        number_label.place(x=number_label_x, y=number_label_y)
+    def motion_of_coin(self , counter_coin , specific_coin , number_label , number_label_x , number_label_y ,
+                       color_coin , path_counter):
+        if not self.window.winfo_exists ( ):
+            logging.debug ( "Window destroyed, skipping coin motion" )
+            return counter_coin
+        number_label.place ( x = number_label_x , y = number_label_y )
         while True:
             if path_counter == 0:
                 break
-            elif (counter_coin == 51 and color_coin == "red") or (counter_coin == 12 and color_coin == "green") or (counter_coin == 25 and color_coin == "yellow") or (counter_coin == 38 and color_coin == "sky_blue") or counter_coin >= 100:
+            elif (counter_coin == 51 and color_coin == "red") or (counter_coin == 12 and color_coin == "green") or (
+                    counter_coin == 25 and color_coin == "yellow") or (
+                    counter_coin == 38 and color_coin == "sky_blue") or counter_coin >= 100:
                 if counter_coin < 100:
                     counter_coin = 100
-                counter_coin = self.under_room_traversal_control(specific_coin, number_label, number_label_x, number_label_y, path_counter, counter_coin, color_coin)
+                counter_coin = self.under_room_traversal_control ( specific_coin , number_label , number_label_x ,
+                                                                   number_label_y , path_counter , counter_coin ,
+                                                                   color_coin )
                 if counter_coin == 106:
-                    messagebox.showinfo("Destination reached", "Congrats! You are now at the destination")
+                    messagebox.showinfo ( "Destination reached" , "Congrats! You are now at the destination" )
                     if path_counter == 6:
                         self.six_with_overlap = 1
                     else:
@@ -1025,66 +1037,74 @@ class Ludo:
                 break
             counter_coin += 1
             path_counter -= 1
-            number_label.place_forget()
+            number_label.place_forget ( )
             if counter_coin <= 5:
-                self.make_canvas.move(specific_coin, 40, 0)
+                self.make_canvas.move ( specific_coin , 40 , 0 )
                 number_label_x += 40
             elif counter_coin == 6:
-                self.make_canvas.move(specific_coin, 40, -40)
+                self.make_canvas.move ( specific_coin , 40 , -40 )
                 number_label_x += 40
                 number_label_y -= 40
             elif 6 < counter_coin <= 11:
-                self.make_canvas.move(specific_coin, 0, -40)
+                self.make_canvas.move ( specific_coin , 0 , -40 )
                 number_label_y -= 40
             elif counter_coin <= 13:
-                self.make_canvas.move(specific_coin, 40, 0)
+                self.make_canvas.move ( specific_coin , 40 , 0 )
                 number_label_x += 40
             elif counter_coin <= 18:
-                self.make_canvas.move(specific_coin, 0, 40)
+                self.make_canvas.move ( specific_coin , 0 , 40 )
                 number_label_y += 40
             elif counter_coin == 19:
-                self.make_canvas.move(specific_coin, 40, 40)
+                self.make_canvas.move ( specific_coin , 40 , 40 )
                 number_label_x += 40
                 number_label_y += 40
             elif counter_coin <= 24:
-                self.make_canvas.move(specific_coin, 40, 0)
+                self.make_canvas.move ( specific_coin , 40 , 0 )
                 number_label_x += 40
             elif counter_coin <= 26:
-                self.make_canvas.move(specific_coin, 0, 40)
+                self.make_canvas.move ( specific_coin , 0 , 40 )
                 number_label_y += 40
             elif counter_coin <= 31:
-                self.make_canvas.move(specific_coin, -40, 0)
+                self.make_canvas.move ( specific_coin , -40 , 0 )
                 number_label_x -= 40
             elif counter_coin == 32:
-                self.make_canvas.move(specific_coin, -40, 40)
+                self.make_canvas.move ( specific_coin , -40 , 40 )
                 number_label_x -= 40
                 number_label_y += 40
             elif counter_coin <= 37:
-                self.make_canvas.move(specific_coin, 0, 40)
+                self.make_canvas.move ( specific_coin , 0 , 40 )
                 number_label_y += 40
             elif counter_coin <= 39:
-                self.make_canvas.move(specific_coin, -40, 0)
+                self.make_canvas.move ( specific_coin , -40 , 0 )
                 number_label_x -= 40
             elif counter_coin <= 44:
-                self.make_canvas.move(specific_coin, 0, -40)
+                self.make_canvas.move ( specific_coin , 0 , -40 )
                 number_label_y -= 40
             elif counter_coin == 45:
-                self.make_canvas.move(specific_coin, -40, -40)
+                self.make_canvas.move ( specific_coin , -40 , -40 )
                 number_label_x -= 40
                 number_label_y -= 40
             elif counter_coin <= 50:
-                self.make_canvas.move(specific_coin, -40, 0)
+                self.make_canvas.move ( specific_coin , -40 , 0 )
                 number_label_x -= 40
             elif counter_coin == 51:
-                self.make_canvas.move(specific_coin, 0, -40)
+                self.make_canvas.move ( specific_coin , 0 , -40 )
                 number_label_y -= 40
-            self.window.update()
-            time.sleep(0.2)
-            number_label.place(x=number_label_x, y=number_label_y)
+            if self.window.winfo_exists ( ):
+                self.window.update ( )
+                time.sleep ( 0.2 )
+                number_label.place ( x = number_label_x , y = number_label_y )
+            else:
+                logging.debug ( "Window destroyed, stopping coin motion" )
+                break
         return counter_coin
 
-    def under_room_traversal_control(self, specific_coin, number_label, number_label_x, number_label_y, path_counter, counter_coin, color_coin):
-        number_label.place(x=number_label_x, y=number_label_y)
+    def under_room_traversal_control(self , specific_coin , number_label , number_label_x , number_label_y ,
+                                     path_counter , counter_coin , color_coin):
+        if not self.window.winfo_exists ( ):
+            logging.debug ( "Window destroyed, skipping room traversal" )
+            return counter_coin
+        number_label.place ( x = number_label_x , y = number_label_y )
         start_x = 100 + 240
         start_y = 15 + 240 + 40
         if color_coin == "red":
@@ -1099,24 +1119,28 @@ class Ludo:
         elif color_coin == "sky_blue":
             start_x = 100 + 240
             start_y = 15 + 240 + 80
-        for i in range(path_counter):
+        for i in range ( path_counter ):
             if counter_coin < 106:
                 counter_coin += 1
                 if color_coin == "red":
-                    self.make_canvas.move(specific_coin, 0, 40)
+                    self.make_canvas.move ( specific_coin , 0 , 40 )
                     number_label_y += 40
                 elif color_coin == "green":
-                    self.make_canvas.move(specific_coin, -40, 0)
+                    self.make_canvas.move ( specific_coin , -40 , 0 )
                     number_label_x -= 40
                 elif color_coin == "yellow":
-                    self.make_canvas.move(specific_coin, 40, 0)
+                    self.make_canvas.move ( specific_coin , 40 , 0 )
                     number_label_x += 40
                 elif color_coin == "sky_blue":
-                    self.make_canvas.move(specific_coin, 0, -40)
+                    self.make_canvas.move ( specific_coin , 0 , -40 )
                     number_label_y -= 40
-                self.window.update()
-                time.sleep(0.2)
-                number_label.place(x=number_label_x, y=number_label_y)
+                if self.window.winfo_exists ( ):
+                    self.window.update ( )
+                    time.sleep ( 0.2 )
+                    number_label.place ( x = number_label_x , y = number_label_y )
+                else:
+                    logging.debug ( "Window destroyed, stopping room traversal" )
+                    break
         return counter_coin
 
     def coord_overlap(self, current_position, color_coin, path_counter):

@@ -7,7 +7,7 @@ import mysql.connector
 import customtkinter as ctk
 from subprocess import call
 from tkinter.ttk import Separator
-
+import Ludo_game
 class Game:
     def __init__(self, root1, username_lg="su12"):
         self.root = root1
@@ -921,6 +921,8 @@ class Game:
             call(['python', 'How to play/how to play ludo.py'])
         elif game_id == 6:
             call(['python', 'How to play/how to play 8puzzle.py'])
+        elif game_id == 7:
+            call ( ['python' , 'How to play/how to play quiz.py'] )
 
     def show_profile(self):
         if not self.userName:
@@ -1510,12 +1512,16 @@ class Game:
             main.Space(new_root, self.userName, game_id)
         elif game_id == 4:
             call(['python', 'TicTacToe.py',self.userName])
-        elif game_id == 5:
-                import Ludo_game
-                new_root = tk.Tk()
 
-                Ludo_game.Ludo(new_root, self.userName)
-                new_root.mainloop()
+
+        elif game_id == 5:  # Assuming game_id 5 is for Ludo
+            new_root = tk.Toplevel ( self.root )  # Use Toplevel instead of Tk
+            new_root.geometry ( "1535x780+-7+0" )
+            new_root.title ( "Play Ludo with Sam" )
+            new_root.iconbitmap ( "Images/ludo_icon.ico" )
+            new_root.resizable ( False , False )
+            Ludo_game.Ludo ( new_root , self.userName )
+
         elif game_id == 6:
             call(['python', 'puzzle.py', self.userName])
         elif game_id == 7:
@@ -1566,3 +1572,4 @@ if __name__ == '__main__':
     root = tk.Tk()
     app = Game(root, username_lg="")
     root.mainloop()
+
