@@ -1564,5 +1564,5 @@ class Game:
 
 if __name__ == '__main__':
     root = tk.Tk()
-    app = Game(root, username_lg="su12")
+    app = Game(root, username_lg="")
     root.mainloop()
