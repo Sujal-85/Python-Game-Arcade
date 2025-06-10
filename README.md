@@ -34,11 +34,15 @@
       );
 
 
-**2. Install All Dependencies:**
+**2. Clone the Git Repo:**
+
+        git clone https://github.com/Sujal-85/Python-Game-Arcade.git
+        
+**3. Install All Dependencies:**
 
       pip install -r requirements.txt
 
-**3. Screenshots for Demo Purpose:**
+**4. Screenshots for Demo Purpose:**
 
 1.
 
