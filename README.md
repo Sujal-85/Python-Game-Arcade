@@ -42,13 +42,22 @@
 
       pip install -r requirements.txt
 
-**4. Screenshots for Demo Purpose:**
+**4. Run the Project:**
 
-1.
+        a. Open project folder in PyCharm or VS code (perferred PyCharm).
+
+        b. Run then command in terminal:
+
+                   python3 run mainGui.py
+   
+
+**5. Screenshots for Demo Purpose:**
+
+**1. MainGUI**
 
 ![Screenshot 2025-06-09 221934](https://github.com/user-attachments/assets/0b76e1a4-f1be-48ff-bf4e-d7fc79489efc)
 
-2.
+**2. Profile Dashboard**
 
 ![Screenshot 2025-06-09 221950](https://github.com/user-attachments/assets/4443c15a-0ff2-4bfd-b016-13f3f187a211)
 
